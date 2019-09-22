@@ -34,6 +34,7 @@ And load each cog with
 
 Name | Description
 --- | ---
+DynamicChannelList | Create dynamically updating channel lists.
 
 # Contact
 
@@ -42,3 +43,4 @@ Feel free to create an issue on this repository or join [my discord](https://dis
 # Credit
 
 Thanks to:  
+Brandjuh#0001 for [requesting](https://cogboard.red/t/dynamic-embedded-channel-information/464) DynamicChannelList.
