@@ -140,7 +140,7 @@ class DynamicChannelList(commands.Cog):
 		for cat in guild.categories:
 			if cat.id in ignoredCategories:
 				continue
-			msg += f'\n**{cat.name}**\n'
+			msg += f'\n**{cat.name.upper()}**\n'
 			for chan in cat.text_channels:
 				if chan.id in ignoredChannels:
 					continue
