@@ -1,0 +1,10 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "Thanks for installing LoveCalc. See `[p]help lovecalc` for more.",
+    "name" : "LoveCalc",
+    "short" : "Calculate the love between two people.",
+    "requirements" : [],
+    "description" : "Calculate the love between two people.",
+    "tags" : ["fun"],
+    "min_python_version": [3, 6, 0]
+}
