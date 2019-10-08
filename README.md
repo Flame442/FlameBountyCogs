@@ -35,6 +35,7 @@ And load each cog with
 Name | Description
 --- | ---
 DynamicChannelList | Create dynamically updating channel lists.
+LoveCalc | Calculate the love between two people.
 
 # Contact
 
