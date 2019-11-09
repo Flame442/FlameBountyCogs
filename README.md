@@ -36,6 +36,7 @@ Name | Description
 --- | ---
 DynamicChannelList | Create dynamically updating channel lists.
 LoveCalc | Calculate the love between two people.
+Quotes | Store and display quotes.
 
 # Contact
 
@@ -44,4 +45,5 @@ Feel free to create an issue on this repository or join [my discord](https://dis
 # Credit
 
 Thanks to:  
-Brandjuh#0001 for [requesting](https://cogboard.red/t/dynamic-embedded-channel-information/464) DynamicChannelList.
+Brandjuh#0001 for [requesting](https://cogboard.red/t/dynamic-embedded-channel-information/464) DynamicChannelList.  
+BUDDGAF#0087 for [requesting](https://cogboard.red/t/completed-and-paid-need-a-quote-cog/424) Quotes.
