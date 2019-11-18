@@ -42,9 +42,9 @@ class Quotes(commands.Cog):
 		If no id is provided, a random quote will be sent.
 		"""
 		quotes = await self.config.guild(ctx.guild).quotes()
+		if not quotes:
+			return await ctx.send('There are no saved quotes.')
 		if quote_id is None:
-			if not quotes:
-				return await ctx.send('There are no saved quotes.')
 			embed_list = []
 			for index in quotes:
 				embed_list.append(await self._build_quote(ctx, quotes[index], index))
@@ -52,7 +52,17 @@ class Quotes(commands.Cog):
 			c = DEFAULT_CONTROLS if len(embed_list) > 1 else {"\N{CROSS MARK}": close_menu}
 			return await menu(ctx, embed_list, c)
 		if not quote_id.isdigit():
-			return await ctx.send('The quote id needs to be a number.')
+			if not len(ctx.message.mentions) == 1:
+				return await ctx.send('The quote id needs to be a number or exactly one user mention.')
+			embed_list = []
+			for index in quotes:
+				if quotes[index]['author'] == int(quote_id[2:-1]):
+					embed_list.append(await self._build_quote(ctx, quotes[index], index))
+			if len(embed_list) == 0:
+				return await ctx.send('No quote found for this user.')
+			random_order = random.shuffle(embed_list)
+			c = DEFAULT_CONTROLS if len(embed_list) > 1 else {"\N{CROSS MARK}": close_menu}
+			return await menu(ctx, embed_list, c)
 		if quote_id not in quotes:
 			return await ctx.send('That quote could not be found.')
 		quote = quotes[quote_id]
