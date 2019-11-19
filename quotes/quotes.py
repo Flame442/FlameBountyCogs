@@ -52,7 +52,7 @@ class Quotes(commands.Cog):
 			c = DEFAULT_CONTROLS if len(embed_list) > 1 else {"\N{CROSS MARK}": close_menu}
 			return await menu(ctx, embed_list, c)
 		if not quote_id.isdigit():
-			if not len(ctx.message.mentions) == 1:
+			if not len(ctx.message.mentions) == 1 or len(ctx.message.content.split()) > 2:
 				return await ctx.send('The quote id needs to be a number or exactly one user mention.')
 			embed_list = []
 			for index in quotes:
