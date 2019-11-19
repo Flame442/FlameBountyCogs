@@ -4,9 +4,11 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
 from redbot.core.utils.chat_formatting import pagify
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from redbot.core.utils.menus import menu, close_menu, DEFAULT_CONTROLS
+from typing import Union
 import asyncio
 import random
+
 
 class CustomMember(commands.Converter):
 	"""Wrapper for discord.Member converter with a different error message."""
@@ -21,6 +23,7 @@ class CustomMember(commands.Converter):
 			)
 		return result
 
+
 class Quotes(commands.Cog):
 	"""Store and display quotes."""
 	def __init__(self, bot):
@@ -34,25 +37,29 @@ class Quotes(commands.Cog):
 	@commands.guild_only()
 	@commands.bot_has_permissions(embed_links=True)
 	@commands.group(invoke_without_command=True)
-	async def quote(self, ctx, quote_id: str=None):
+	async def quote(self, ctx, quote_id: Union[discord.Member, int, str]=None):
 		"""
 		View a quote.
 		
-		Use the optional parameter quote_id to specify a quote to view.
+		Use the optional parameter quote_id to specify a quote to view or to view a random quote from a specific member.
 		If no id is provided, a random quote will be sent.
 		"""
 		quotes = await self.config.guild(ctx.guild).quotes()
-		if quote_id is None:
-			if not quotes:
-				return await ctx.send('There are no saved quotes.')
+		if not quotes:
+			return await ctx.send('There are no saved quotes.')
+		if isinstance(quote_id, str):
+			return await ctx.send('The quote id must be a number or member.')
+		if quote_id is None or isinstance(quote_id, discord.Member):
 			embed_list = []
 			for index in quotes:
-				embed_list.append(await self._build_quote(ctx, quotes[index], index))
-			random_order = random.shuffle(embed_list)
+				if quote_id is None or quotes[index]['author'] == quote_id.id:
+					embed_list.append(await self._build_quote(ctx, quotes[index], index))
+			if not embed_list:
+				return await ctx.send('That member does not have any quotes.')
+			random.shuffle(embed_list)
 			c = DEFAULT_CONTROLS if len(embed_list) > 1 else {"\N{CROSS MARK}": close_menu}
 			return await menu(ctx, embed_list, c)
-		if not quote_id.isdigit():
-			return await ctx.send('The quote id needs to be a number.')
+		quote_id = str(quote_id)
 		if quote_id not in quotes:
 			return await ctx.send('That quote could not be found.')
 		quote = quotes[quote_id]
