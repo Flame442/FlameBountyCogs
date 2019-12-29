@@ -65,11 +65,12 @@ class DynamicChannelList(commands.Cog):
 		"""
 		value = [message.channel.id, message.id]
 		async with self.config.guild(ctx.guild).toUpdate() as toUpdate:
-			if value in toUpdate:
-				toUpdate.remove(value)
-				await ctx.send('Done.')
-			else:
-				await ctx.send('That message is not a dynamic channel list.')
+			for value in toUpdate:
+				if value[1] == message.id:
+					toUpdate.remove(value)
+					await ctx.send('Done.')
+					return
+		await ctx.send('That message is not a dynamic channel list.')
 	
 	@dynamicchannellist.command()
 	async def reloadauto(self, ctx):
