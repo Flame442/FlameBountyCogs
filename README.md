@@ -34,6 +34,7 @@ And load each cog with
 
 Name | Description
 --- | ---
+Blinder | Create custom roles that remove certain roles and hide channels from users.
 DynamicChannelList | Create dynamically updating channel lists.
 LoveCalc | Calculate the love between two people.
 Quotes | Store and display quotes.
