@@ -58,7 +58,7 @@ class LastPing(commands.Cog):
 	async def run_update(self, guild):
 		"""Updates the auto update message for a particular guild."""
 		now = time.time()
-		message_data = self.cache[message.guild.id]['autoUpdateMessage']
+		message_data = self.cache[guild.id]['autoUpdateMessage']
 		if not message_data:
 			return
 		cid, mid = message_data[0], message_data[1]
@@ -69,7 +69,7 @@ class LastPing(commands.Cog):
 			message = await channel.fetch_message(mid)
 		except Exception:
 			return
-		lastPing = self.cache[message.guild.id]['lastPing']
+		lastPing = self.cache[guild.id]['lastPing']
 		if not lastPing:
 			return
 		delta = now - lastPing
@@ -77,7 +77,7 @@ class LastPing(commands.Cog):
 			await message.edit(self.build_string(delta))
 		except Exception:
 			pass
-		self.cache[message.guild.id]['lastUpdate'] = now
+		self.cache[guild.id]['lastUpdate'] = now
 		await self.config.guild(guild).lastUpdate.set(now)
 
 	@commands.Cog.listener()
@@ -88,7 +88,7 @@ class LastPing(commands.Cog):
 			data = await self.config.guild(message.guild).all()
 			self.cache[message.guild.id] = {
 				'lastPing': data['lastPing'],
-				'lastUpdate': data['autoUpdateMessage'],
+				'lastUpdate': data['lastUpdate'],
 				'autoUpdateMessage': data['autoUpdateMessage']
 			}
 		if not message.mention_everyone:
