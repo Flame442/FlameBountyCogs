@@ -1,0 +1,10 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "Thanks for installing LastPing. See `[p]help LastPing` for more.",
+    "name" : "LastPing",
+    "short" : "View how long servers have lasted without a mass mention.",
+    "requirements" : [],
+    "description" : "View how long servers have lasted without a mass mention.",
+    "tags" : ["fun"],
+    "min_python_version": [3, 6, 0]
+}
