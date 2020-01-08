@@ -83,6 +83,8 @@ class LastPing(commands.Cog):
 	@commands.Cog.listener()
 	async def on_message(self, message):
 		# either @everyone or @here is in the message AND it did end up mentioning
+		if not message.guild:
+			return
 		now = time.time()
 		if message.guild.id not in self.cache:
 			data = await self.config.guild(message.guild).all()
