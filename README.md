@@ -37,6 +37,7 @@ Name | Description
 Blinder | Create custom roles that remove certain roles and hide channels from users.
 DynamicChannelList | Create dynamically updating channel lists.
 LastPing | View how long servers have lasted without a mass mention.
+ListMaker | Make lists to store personal data.
 LoveCalc | Calculate the love between two people.
 Quotes | Store and display quotes.
 TellMe | Create custom commands with DMs and server messages.
@@ -54,3 +55,4 @@ aikaterna#1393 for requesting LoveCalc.
 Kloud ☁#7120 for requesting TellMe.  
 LGA Code#0001 for [requesting](https://cogboard.red/t/hired-blinders-cog/508) Blinder.  
 LGA Code#0001 for requesting LastPing.  
+Sky • ✿ • S̶k̶y̶l̶a̶r̶r̶#6666 for requesting ListMaker.  
