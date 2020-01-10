@@ -1,0 +1,10 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "Thanks for installing ListMaker. See `[p]help listmaker` for more.",
+    "name" : "ListMaker",
+    "short" : "Make lists to store personal data.",
+    "requirements" : ["tabulate"],
+    "description" : "Make lists to store personal data.",
+    "tags" : ["utility"],
+    "min_python_version": [3, 6, 0]
+}
