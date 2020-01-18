@@ -107,8 +107,7 @@ class ListMaker(commands.Cog):
 		if list_name not in lists:
 			await ctx.send('That list does not exist.')
 			return
-		data = lists[list_name]['data']
-		msg = tabulate(lists[list_name]['data'], headers=lists[list_name]['columns'])
+		msg = tabulate(lists[list_name]['data'], headers=lists[list_name]['columns'], showindex=range(1, len(lists[list_name]['data']) + 1))
 		paged = pagify(msg)
 		box_paged = (f'```{x}```' for x in paged)
 		await ctx.send_interactive(box_paged)
@@ -150,4 +149,3 @@ class ListMaker(commands.Cog):
 		paged = pagify(msg)
 		box_paged = (f'```{x}```' for x in paged)
 		await ctx.send_interactive(box_paged)
-		
