@@ -51,7 +51,8 @@ class LastPing(commands.Cog):
 		await self.config.guild(ctx.guild).autoUpdateMessage.set(None)
 		await ctx.send('Done.')
 	
-	def build_string(self, delta):
+	@staticmethod
+	def build_string(delta):
 		"""Build the string for messages based on a time delta."""
 		return f'This server has lasted **{int(delta//86400)}** days without a mass mention.'
 	
@@ -74,7 +75,7 @@ class LastPing(commands.Cog):
 			return
 		delta = now - lastPing
 		try:
-			await message.edit(self.build_string(delta))
+			await message.edit(content=self.build_string(delta))
 		except Exception:
 			pass
 		self.cache[guild.id]['lastUpdate'] = now
@@ -96,7 +97,7 @@ class LastPing(commands.Cog):
 		if not message.mention_everyone:
 			lu = self.cache[message.guild.id]['lastUpdate']
 			if lu and lu // 86400 != now // 86400:
-				self.run_update(message.guild)
+				await self.run_update(message.guild)
 			return
 		await self.config.guild(message.guild).lastPing.set(now)
 		await self.run_update(message.guild)
