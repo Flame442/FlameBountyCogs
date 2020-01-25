@@ -120,7 +120,11 @@ class ListMaker(commands.Cog):
 		data = lists[list_name]['data']
 		if lists[list_name].get('sort', None):
 			sort = lists[list_name]['sort']
-			data = sorted(data, key=lambda a: a[sort[0]], reverse=sort[1])
+			if show_index:
+				#Sorts both lists by "data"
+				data, show_index = zip(*sorted(zip(data, show_index), key=lambda a: a[0][sort[0]], reverse=sort[1]))
+			else:
+				data = sorted(data, key=lambda a: a[sort[0]], reverse=sort[1])
 		msg = tabulate(data, headers=lists[list_name]['columns'], showindex=show_index)
 		paged = pagify(msg)
 		box_paged = (f'```{x}```' for x in paged)
