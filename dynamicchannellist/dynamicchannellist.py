@@ -235,7 +235,7 @@ class DynamicChannelList(commands.Cog):
 			try:
 				msg = await guild.get_channel(value[0]).fetch_message(value[1])
 			except Exception:
-				pass
+				continue
 			if (
 				msg.embeds[0].description != embed.description
 				or msg.embeds[0].color != embed.color
@@ -244,4 +244,4 @@ class DynamicChannelList(commands.Cog):
 				try:
 					await msg.edit(embed=embed)
 				except discord.errors.Forbidden:
-					pass
+					continue
