@@ -3,6 +3,7 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.core.utils.chat_formatting import pagify
 from tabulate import tabulate
+import datetime
 
 
 class ListMaker(commands.Cog):
@@ -40,7 +41,9 @@ class ListMaker(commands.Cog):
 				'data': [],
 				#BELOW ARE NOT GUARANTEED TO BE IN A LIST
 				'roles': [],
-				'sort': None
+				'sort': None,
+				'header': '',
+				'last_update': self._date_formatted()
 			}
 		await ctx.send(f'List `{list_name}` created.')
 		
@@ -70,6 +73,7 @@ class ListMaker(commands.Cog):
 			while values:	
 				lists[list_name]['data'].append(values[:req_len])
 				values = values[req_len:]
+			lists[list_name]['last_update'] = self._date_formatted()
 		await ctx.send('Data added.')
 	
 	@listmaker.command()
@@ -97,7 +101,7 @@ class ListMaker(commands.Cog):
 				await ctx.send('The row number cannot be greater than the number of rows.')
 				return
 			del lists[list_name]['data'][row_number - 1]
-		
+			lists[list_name]['last_update'] = self._date_formatted()
 		await ctx.send('Data removed.')
 	
 	@listmaker.command()
@@ -126,8 +130,11 @@ class ListMaker(commands.Cog):
 			else:
 				data = sorted(data, key=lambda a: a[sort[0]], reverse=sort[1])
 		msg = tabulate(data, headers=lists[list_name]['columns'], showindex=show_index)
+		header = lists[list_name].get('header', '')
+		header = header.replace('{date}', lists[list_name].get('last_update', '(Unknown date)'))
+		msg = header + '\n' + msg
 		paged = pagify(msg)
-		box_paged = (f'```{x}```' for x in paged)
+		box_paged = (f'```\n{x}```' for x in paged)
 		await ctx.send_interactive(box_paged)
 	
 	@listmaker.command()
@@ -195,7 +202,7 @@ class ListMaker(commands.Cog):
 				await ctx.send('Removed.')
 				return
 			lists[list_name]['roles'].append(role_id)
-			await ctx.send('Added.')
+		await ctx.send('Added.')
 
 	@listmaker.command()
 	async def sort(self, ctx, list_name, column_name=None, reverse: bool=False):
@@ -221,8 +228,29 @@ class ListMaker(commands.Cog):
 				return
 			idx = lists[list_name]['columns'].index(column_name)
 			lists[list_name]['sort'] = [idx, reverse]
-			await ctx.send(f'This list will now be sorted by column {column_name}.')
+		await ctx.send(f'The list will now be sorted by column {column_name}.')
+			
+	@listmaker.command()
+	async def header(self, ctx, list_name, text=None):
+		"""
+		Set the text to be used as a header for a list.
 		
+		Wrap anything that requires spaces in quotes.
+		The text `{date}` will be replaced by the date the list was last updated.
+		"""
+		async with self.config.lists() as lists:
+			if list_name not in lists:
+				await ctx.send('That list does not exist.')
+				return
+			if not self._user_can_access(lists[list_name], ctx.author):
+				await ctx.send('You do not have permission to edit that list.')
+				return
+			if text is None:
+				lists[list_name]['header'] = ''
+				await ctx.send('Removed the header.')
+				return
+			lists[list_name]['header'] = text
+		await ctx.send(f'The list will now have the header {text}.')
 
 	@staticmethod
 	def _user_can_access(lm_list, user):
@@ -234,3 +262,8 @@ class ListMaker(commands.Cog):
 		if any(rid in list_roles for rid in user_roles):
 			return True
 		return False
+	
+	@staticmethod
+	def _date_formatted():
+		"""Returns the current date formatted as YYY-MM-DD"""
+		return datetime.datetime.now().strftime('%Y-%m-%d')
