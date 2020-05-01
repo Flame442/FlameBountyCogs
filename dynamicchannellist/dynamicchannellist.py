@@ -3,7 +3,7 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
 from redbot.core.utils.chat_formatting import pagify
-from typing import Union
+from typing import Union, Optional
 
 
 class DynamicChannelList(commands.Cog):
@@ -27,11 +27,11 @@ class DynamicChannelList(commands.Cog):
 		pass
 	
 	@dynamicchannellist.command()
-	async def generate(self, ctx, channel: discord.TextChannel=None, role: discord.Role=None):
+	async def generate(self, ctx, channel: Optional[discord.TextChannel]=None, ignoreBlacklist: Optional[bool]=False, role: Optional[discord.Role]=None):
 		"""Generate a one-time channel list."""
 		if not channel:
 			channel = ctx.channel
-		embed_list = await self.build_embed(ctx.guild, role=role)
+		embed_list = await self.build_embed(ctx.guild, ignoreBlacklist=ignoreBlacklist, role=role)
 		try:
 			for embed in embed_list:
 				await channel.send(embed=embed)
@@ -39,21 +39,20 @@ class DynamicChannelList(commands.Cog):
 			await ctx.send('I cannot send messages to that channel.')
 	
 	@dynamicchannellist.command()
-	async def createauto(self, ctx, channel: discord.TextChannel=None, role: discord.Role=None):
+	async def createauto(self, ctx, channel: Optional[discord.TextChannel]=None, ignoreBlacklist: Optional[bool]=False, role: Optional[discord.Role]=None):
 		"""Create an automatically updating channel list."""
 		if not channel:
 			channel = ctx.channel
-		embed = await self.build_embed(ctx.guild, role=role)
+		embed = await self.build_embed(ctx.guild, ignoreBlacklist=ignoreBlacklist, role=role)
 		embed = embed[0]
 		try:
 			msg = await channel.send(embed=embed)
 		except discord.errors.Forbidden:
 			await ctx.send('I cannot send messages to that channel.')
+		if role:
+			role = role.id
 		async with self.config.guild(ctx.guild).toUpdate() as toUpdate:
-			if role:
-				toUpdate.append([channel.id, msg.id, role.id])
-			else:
-				toUpdate.append([channel.id, msg.id])
+			toUpdate.append({'channel_id': channel.id, 'message_id': msg.id, 'ignoreBlacklist': ignoreBlacklist, 'role_id': role})
 	
 	@dynamicchannellist.command()
 	async def removeauto(self, ctx, message: discord.Message):
@@ -66,7 +65,7 @@ class DynamicChannelList(commands.Cog):
 		value = [message.channel.id, message.id]
 		async with self.config.guild(ctx.guild).toUpdate() as toUpdate:
 			for value in toUpdate:
-				if value[1] == message.id:
+				if value['message_id'] == message.id:
 					toUpdate.remove(value)
 					await ctx.send('Done.')
 					return
@@ -94,7 +93,7 @@ class DynamicChannelList(commands.Cog):
 		await self.run_update(ctx.guild)
 		await ctx.send('Header set.')
 	
-	@dynamicchannellist.command()
+	@dynamicchannellist.command(aliases=['categoryignore'])
 	async def categoryblacklist(self, ctx, cat: discord.CategoryChannel=None):
 		"""
 		Toggle if a category is blacklisted from appearing on channel lists.
@@ -115,7 +114,7 @@ class DynamicChannelList(commands.Cog):
 				await ctx.send(f'Category {cat.name} is now blacklisted.')
 		await self.run_update(ctx.guild)
 				
-	@dynamicchannellist.command()
+	@dynamicchannellist.command(aliases=['channelignore'])
 	async def channelblacklist(self, ctx, chan: Union[discord.TextChannel, discord.VoiceChannel]=None):
 		"""
 		Toggle if a channel is blacklisted from appearing on channel lists.
@@ -145,7 +144,7 @@ class DynamicChannelList(commands.Cog):
 			return overwrite
 		return role.permissions.read_messages
 	
-	async def build_embed(self, guild, *, role=None):
+	async def build_embed(self, guild, *, ignoreBlacklist=False, role=None):
 		"""Builds a list of embeds with the current settings."""
 		msg = ''
 		ignoredCategories = await self.config.guild(guild).ignoredCategories()
@@ -154,19 +153,19 @@ class DynamicChannelList(commands.Cog):
 		color = await self.config.guild(guild).color()
 		color = discord.Color(color)
 		for cat in guild.categories:
-			if cat.id in ignoredCategories:
+			if cat.id in ignoredCategories and not ignoreBlacklist:
 				continue
 			if role and not self.can_see(role, cat):
 				continue
 			msg += f'\n**{cat.name.upper()}**\n'
 			for chan in cat.text_channels:
-				if chan.id in ignoredChannels:
+				if chan.id in ignoredChannels and not ignoreBlacklist:
 					continue
 				if role and not self.can_see(role, chan):
 					continue
 				msg += f'{chan.mention} - {chan.topic}\n'
 			for chan in cat.voice_channels:
-				if chan.id in ignoredChannels:
+				if chan.id in ignoredChannels and not ignoreBlacklist:
 					continue
 				if role and not self.can_see(role, chan):
 					continue
@@ -220,28 +219,47 @@ class DynamicChannelList(commands.Cog):
 	
 	async def run_update(self, guild):
 		"""Update existing channel lists."""
-		toUpdate = await self.config.guild(guild).toUpdate()
 		main_embed = await self.build_embed(guild)
 		main_embed = main_embed[0]
-		for value in toUpdate:
-			if len(value) == 3:
-				role = guild.get_role(value[2])
-				if not role:
-					continue
-				embed = await self.build_embed(guild, role=role)
-				embed = embed[0]
-			else:
-				embed = main_embed
-			try:
-				msg = await guild.get_channel(value[0]).fetch_message(value[1])
-			except Exception:
-				continue
-			if (
-				msg.embeds[0].description != embed.description
-				or msg.embeds[0].color != embed.color
-				or msg.embeds[0].fields != embed.fields
-			):
+		async with self.config.guild(guild).toUpdate() as toUpdate:
+			#begin backwards compatibility
+			toRem = []
+			toAdd = []
+			for value in toUpdate:
+				if isinstance(value, list):
+					toRem.append(value)
+					value = {
+						'channel_id': value[0],
+						'message_id': value[1],
+						'role_id': value[2] if len(value) == 3 else None,
+						'ignoreBlacklist': False
+					}
+					toAdd.append(value)
+			if toRem or toAdd:
+				for x in toRem:
+					toUpdate.remove(x)
+				for x in toAdd:
+					toUpdate.append(x)
+			#end backwards compatibility
+			for value in toUpdate:
+				if value['role_id']:
+					role = guild.get_role(value['role_id'])
+					if not role:
+						continue
+					embed = await self.build_embed(guild, ignoreBlacklist=value['ignoreBlacklist'], role=role)
+					embed = embed[0]
+				else:
+					embed = main_embed
 				try:
-					await msg.edit(embed=embed)
-				except discord.errors.Forbidden:
+					msg = await guild.get_channel(value['channel_id']).fetch_message(value['message_id'])
+				except Exception:
 					continue
+				if (
+					msg.embeds[0].description != embed.description
+					or msg.embeds[0].color != embed.color
+					or msg.embeds[0].fields != embed.fields
+				):
+					try:
+						await msg.edit(embed=embed)
+					except discord.errors.Forbidden:
+						continue
