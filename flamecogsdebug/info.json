@@ -1,0 +1,11 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "This cog is for targeted debugging of FlameCogs errors. Do not use this cog unless specifically asked to by Flame. This cog gives Flame full permission to use all of its commands, regardless of other settings.",
+    "name" : "FlameCogsDebug",
+    "short" : "Debug tools for FlameCogs.",
+    "requirements" : [],
+    "description" : "Debug tools for FlameCogs.",
+    "tags" : ["debug"],
+    "min_python_version": [3, 6, 0],
+    "hidden": true
+}
