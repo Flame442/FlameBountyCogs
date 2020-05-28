@@ -152,24 +152,22 @@ class DynamicChannelList(commands.Cog):
 		header = await self.config.guild(guild).header()
 		color = await self.config.guild(guild).color()
 		color = discord.Color(color)
-		for cat in guild.categories:
-			if cat.id in ignoredCategories and not ignoreBlacklist:
+		for cat, channels in guild.by_category():
+			if cat and cat.id in ignoredCategories and not ignoreBlacklist:
 				continue
-			if role and not self.can_see(role, cat):
+			if cat and role and not self.can_see(role, cat):
 				continue
-			msg += f'\n**{cat.name.upper()}**\n'
-			for chan in cat.text_channels:
+			if cat:
+				msg += f'\n**{cat.name.upper()}**\n'
+			for chan in channels:
 				if chan.id in ignoredChannels and not ignoreBlacklist:
 					continue
 				if role and not self.can_see(role, chan):
 					continue
-				msg += f'{chan.mention} - {chan.topic}\n'
-			for chan in cat.voice_channels:
-				if chan.id in ignoredChannels and not ignoreBlacklist:
-					continue
-				if role and not self.can_see(role, chan):
-					continue
-				msg += f'{chan.mention}\n'
+				msg += f'{chan.mention}'
+				if hasattr(chan, 'topic'):
+					msg += f' - {chan.topic}'
+				msg += '\n'
 		msg = msg.strip()
 		if header:
 			msg = f'{header}\n\n{msg}'
