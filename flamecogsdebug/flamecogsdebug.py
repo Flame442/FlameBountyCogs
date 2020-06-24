@@ -10,14 +10,6 @@ COGS = (
 'Monopoly', 'OnlineStats', 'PartyGames', 'Quotes', 'SimpleEmbed',
 'Stocks', 'TellMe', 'WordStats',
 )
-IGNORED_ERRORS = (
-    commands.UserInputError,
-    commands.DisabledCommand,
-    commands.CommandNotFound,
-    commands.CheckFailure,
-    commands.NoPrivateMessage,
-    commands.CommandOnCooldown,
-)
 
 
 class FlameCogsDebug(commands.Cog):
@@ -28,7 +20,6 @@ class FlameCogsDebug(commands.Cog):
 		self.config.register_global(
 			postChannel = None
 		)
-		self.NotFoundChannels = []
 	
 	async def is_flame_or_owner(ctx):
 		return (await ctx.bot.is_owner(ctx.author)) or ctx.author.id == 145519400223506432
@@ -44,36 +35,6 @@ class FlameCogsDebug(commands.Cog):
 		"""Set the channel that FlameCogs debug messages are posted to."""
 		await self.config.postChannel.set(channel.id)
 		await ctx.tick()
-
-	@fcd.command()
-	async def notfound(self, ctx, sort='id'):
-		"""
-		View channel ids associated with discord.NotFound errors.
-		
-		`sort` is either "id" or "time".
-		"""
-		if sort == 'time':
-			idx = 1
-		else:
-			idx = 0
-		order = sorted(self.NotFoundChannels, key=lambda a: a[idx])
-		if not order:
-			return await ctx.send('No discord.NotFound errors recorded.')
-		msg = '```\n'
-		for x in order:
-			msg += (f'{x[0]} | {x[1]}')
-		msg += '```'
-		await ctx.send(msg)
-		
-	@commands.Cog.listener()
-	async def on_command_error(self, ctx, error):
-		"""Track errors in FlameCogs to look for patterns"""
-		if ctx.command.cog.qualified_name not in COGS:
-			return
-		if isinstance(error, IGNORED_ERRORS):
-			return
-		if isinstance(error, discord.NotFound):
-			self.NotFoundChannels.append([ctx.channel.id, datetime.datetime.utcnow()])
 	
 	@commands.Cog.listener()
 	async def on_flamecogs_game_error(self, game, error):
@@ -91,5 +52,3 @@ class FlameCogsDebug(commands.Cog):
 			f'```py\n{stack}\n'
 		)
 		await channel.send(msg[:1997] + '```')
-		if isinstance(error, discord.NotFound):
-			self.NotFoundChannels.append([game.ctx.channel.id, datetime.datetime.utcnow()])
