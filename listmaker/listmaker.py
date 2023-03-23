@@ -20,7 +20,7 @@ class ListMaker(commands.Cog):
 		"""Group command for ListMaker."""
 		pass
 		
-	@listmaker.command()
+	@listmaker.command(require_var_positional=True)
 	async def create(self, ctx, list_name, *column_names):
 		"""
 		Create a new list.
@@ -47,7 +47,7 @@ class ListMaker(commands.Cog):
 			}
 		await ctx.send(f'List `{list_name}` created.')
 		
-	@listmaker.command()
+	@listmaker.command(require_var_positional=True)
 	async def add(self, ctx, list_name, *values):
 		"""
 		Add a row of data to a list.
