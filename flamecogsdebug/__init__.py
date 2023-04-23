@@ -1,4 +1,4 @@
 from .flamecogsdebug import FlameCogsDebug
 
-def setup(bot):
-	bot.add_cog(FlameCogsDebug(bot))
+async def setup(bot):
+	await bot.add_cog(FlameCogsDebug(bot))
