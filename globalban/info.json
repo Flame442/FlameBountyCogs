@@ -1,0 +1,11 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "**WARNING:** This cog should not be used on public bots. Guild owners will not appreciate random members getting banned/unbanned. Use with caution.",
+    "name" : "GlobalBan",
+    "short" : "Execute a ban across all of the bot's servers.",
+    "requirements" : [],
+    "description" : "Execute a ban across all of the bot's servers.",
+    "tags" : ["ban"],
+    "min_bot_version": "3.5.0.dev1",
+    "min_python_version": [3, 6, 0]
+}
