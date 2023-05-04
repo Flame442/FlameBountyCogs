@@ -1,4 +1,4 @@
 from .dynamicchannellist import DynamicChannelList
 
-def setup(bot):
-	bot.add_cog(DynamicChannelList(bot))
+async def setup(bot):
+	await bot.add_cog(DynamicChannelList(bot))

@@ -6,5 +6,6 @@
     "requirements" : [],
     "description" : "View how long servers have lasted without a mass mention.",
     "tags" : ["fun"],
+    "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0]
 }

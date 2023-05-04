@@ -113,7 +113,7 @@ class Quotes(commands.Cog):
 		)
 		author = ctx.guild.get_member(quote['author'])
 		if author is not None:
-			embed = embed.set_footer(text=author.display_name, icon_url=author.avatar_url)
+			embed = embed.set_footer(text=author.display_name, icon_url=author.avatar.url)
 		return embed
 
 	async def member_send_interactive(self, ctx, messages: list):
