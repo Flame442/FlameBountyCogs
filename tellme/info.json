@@ -1,5 +1,5 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing TellMe. See `[p]tellme` for more.",
     "name" : "TellMe",
     "short" : "Create custom commands with DMs and server messages.",

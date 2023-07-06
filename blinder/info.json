@@ -1,5 +1,5 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing Blinder. See `[p]help blinder` for more.",
     "name" : "Blinder",
     "short" : "Create custom roles that remove certain roles and hide channels from users.",

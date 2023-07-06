@@ -1,5 +1,5 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing Dynamic Channel List. See `[p]help dcl` for more.",
     "name" : "DynamicChannelList",
     "short" : "Create dynamically updating channel lists.",

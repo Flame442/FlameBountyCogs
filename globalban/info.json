@@ -1,5 +1,5 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "**WARNING:** This cog should not be used on public bots. Guild owners will not appreciate random members getting banned/unbanned. Use with caution.",
     "name" : "GlobalBan",
     "short" : "Execute a ban across all of the bot's servers.",

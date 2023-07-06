@@ -36,6 +36,7 @@ Name | Description
 --- | ---
 Blinder | Create custom roles that remove certain roles and hide channels from users.
 DynamicChannelList | Create dynamically updating channel lists.
+GlobalBan | Execute a ban across all of the bot's servers.
 LastPing | View how long servers have lasted without a mass mention.
 ListMaker | Make lists to store personal data.
 LoveCalc | Calculate the love between two people.

@@ -1,5 +1,5 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing LastPing. See `[p]help LastPing` for more.",
     "name" : "LastPing",
     "short" : "View how long servers have lasted without a mass mention.",
